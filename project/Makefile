@@ -1,18 +1,23 @@
-COMMON OBJECTS = main.o
-CPU = msp430g2553
-CFLAGS = -mmcu=${CPU} -I../h
-LDFLAGS = -L/opt/ti/msp430_gcc/include
+COMMON_OBJECTS  = main.o 
+CPU             = msp430g2553
+CFLAGS          = -mmcu=${CPU} -I../h
+LDFLAGS		= -L/opt/ti/msp430_gcc/include
 
-CC = msp430-elf-gcc
-AS = msp430-elf-as
+CC              = msp430-elf-gcc
+AS              = msp430-elf-as
 
-all: button.elf
+all: led.elf
 
-button.elf: $(COMMON_OBJECTS) led.o main.o ../lib/libtimer.a
-	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^
+#additional rules for files
+led.elf: ${COMMON_OBJECTS}
+	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^ ../lib/libTimer.a
 
-load: button.elf
-	msp430loader.sh button.elf
+load: led.elf
+	msp430loader.sh led.elf
 
 clean:
 	rm -f *.o *.elf
+
+main.o: led.h
+
+wdInterruptHandler.o:  led.h
