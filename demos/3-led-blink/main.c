@@ -1,4 +1,6 @@
-//Alternate LEDs from Off, Green, and Red
+//This program will turn off green, and then turn off red
+//Then, the two LEDs will turn on/off every second.
+//Since green started off and red started on, they will never be on/off at the same time.
 #include <msp430.h>
 #include "libTimer.h"
 #include "led.h"
@@ -17,13 +19,16 @@ int main(void) {
 // global state var to count time
 int secondCount = 0;
 
+//this runs 250 times a second.
 void
-__interrupt_vec(WDT_VECTOR) WDT()	/* 250 interrupts/sec */
+__interrupt_vec(WDT_VECTOR) WDT()
 {
   secondCount ++;
-  if (secondCount >= 250) { 	/* once each sec... */
-    secondCount = 0;		/* reset count */
-    P1OUT ^= LED_GREEN;		/* toggle green LED */
+  //the lower the number, the faster the blink. 125 blinks twice every second.
+  if (secondCount >= 250) { //if secondCount has run 250 times, a second has passed.
+    secondCount = 0;
+    P1OUT ^= LED_GREEN; //for some reason, this creates the blinking effect
+    P1OUT ^= LED_RED;
   }
 } 
 

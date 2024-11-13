@@ -1,4 +1,4 @@
-//Alternate LEDs from Off, Green, and Red
+//Does same thing as 4/5
 #include <msp430.h>
 #include "libTimer.h"
 #include "led.h"

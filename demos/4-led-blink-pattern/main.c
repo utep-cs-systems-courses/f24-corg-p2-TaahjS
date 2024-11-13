@@ -1,4 +1,9 @@
-//Alternate LEDs from Off, Green, and Red
+//When the program begins, green will be turned off, and red will be turned on.
+//The interrupt function (running 250 times per second) will continuously turn green on/off
+//It will be happening so fast that it looks like green is flickering
+//The function will keep green off during most interrupts, so it'll appear dimmer than red
+//Every second, the amount of 'offs' during the 250 interrupts will increase
+//After 10 seconds, the amount of 'offs' will be reset to its original value.
 #include <msp430.h>
 #include "libTimer.h"
 #include "led.h"
@@ -20,23 +25,22 @@ int blinkCount = 0;  // cycles 0...blinkLimit-1
 int secondCount = 0; // state var representing repeating time 0…1s
 
 void
-__interrupt_vec(WDT_VECTOR) WDT()	/* 250 interrupts/sec */
+__interrupt_vec(WDT_VECTOR) WDT()
 {
-  // handle blinking 
   blinkCount ++;
-  if (blinkCount >= blinkLimit) { // on for 1 interrupt period
+  if (blinkCount >= blinkLimit) { //this will run (250/blinkLimit) times per second
     blinkCount = 0;
     P1OUT |= LED_GREEN;
-  } else		          // off for blinkLimit - 1 interrupt periods
+  } else //this will run 250 - (250/blinkLimit) times per second	       
     P1OUT &= ~LED_GREEN;
 
-  // measure a second
+  //function runs 250 times per second
   secondCount ++;
-  if (secondCount >= 250) {  // once each second
+  if (secondCount >= 250) {
     secondCount = 0;
-    blinkLimit ++;	     // reduce duty cycle
-    if (blinkLimit >= 8)     // but don't let duty cycle go below 1/7.
-      blinkLimit = 0;
+    blinkLimit ++;	     // every second, increase the blink limit
+    if (blinkLimit >= 11)     // if the limit is 11, reset it to 5.
+      blinkLimit = 5;
   }
 } 
 

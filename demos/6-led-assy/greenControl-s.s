@@ -7,9 +7,9 @@
 	.extern P1OUT
 
 greenControl:
-	cmp #0, r12
-	jz off
-	bis #64, &P1OUT		;or
-	pop r0
-off:	and #~64, &P1OUT
-	pop r0
+	cmp #0, r12 		;checks if r12 is 0 or 1
+	jz off 			;if r12 is 0, we jump
+	bis #1, &P1OUT		;P1OUT |= GREEN_LED
+	pop r0			;return
+off:	and #~1, &P1OUT 	;P1OUT &= ~GREEN_LED
+	pop r0			;return

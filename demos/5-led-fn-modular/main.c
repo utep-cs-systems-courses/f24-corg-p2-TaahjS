@@ -1,4 +1,4 @@
-//Alternate LEDs from Off, Green, and Red
+//This program does the same thing as the 4th demo, but implements functions
 #include <msp430.h>
 #include "libTimer.h"
 #include "led.h"
@@ -16,9 +16,9 @@ int main(void) {
 
 void greenControl(int on)
 {
-  if (on) {
+  if (on) { //if on == 1
     P1OUT |= LED_GREEN;
-  } else {
+  } else { //if on == 0
     P1OUT &= ~LED_GREEN;
   }
 }
@@ -31,37 +31,36 @@ void blinkUpdate() // called every 1/250s to blink with duty cycle 1/blinkLimit
   blinkCount ++;
   if (blinkCount >= blinkLimit) {
     blinkCount = 0;
-    greenControl(1);
+    greenControl(1); //P1OUT |= LED_GREEN
   } else
-    greenControl(0);
+    greenControl(0); //P1OUT &= ~LED_GREEN
 }
 
-void oncePerSecond() // repeatedly start bright and gradually lower duty cycle, one step/sec
+void oncePerSecond() //When 1 second has passed, increase the limit unless it is 11
 {
-  blinkLimit ++;  // reduce duty cycle
-  if (blinkLimit >= 8)  // but don't let duty cycle go below 1/7.
-    blinkLimit = 0;
+  blinkLimit ++;
+  if (blinkLimit >= 11)
+    blinkLimit = 5;
 }
 
-void secondUpdate()  // called every 1/250 sec to call oncePerSecond once per second
+void secondUpdate()  //this is called 250 times per second. When 250 interrupts have passed.
 {
-  static int secondCount = 0; // state variable representing repeating time 0…1s
+  static int secondCount = 0; //keeps track of the 250 interrupts
   secondCount ++;
-  if (secondCount >= 250) { // once each second
+  if (secondCount >= 250) { //250 = 1 second
     secondCount = 0;
-    oncePerSecond();
+    oncePerSecond(); //increase blink limit unless it is 11, then set it to 5.
   } }
 
-void timeAdvStateMachines() // called every 1/250 sec
+void timeAdvStateMachines() //called 250 times per second (so unnecessary)
 {
   blinkUpdate();
   secondUpdate();
 }
 
 
-void __interrupt_vec(WDT_VECTOR) WDT()	/* 250 interrupts/sec */
+void __interrupt_vec(WDT_VECTOR) WDT()	//250 times per second
 {
-  // handle blinking   
   timeAdvStateMachines();
 } 
-
+ 

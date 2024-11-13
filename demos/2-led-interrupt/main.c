@@ -1,13 +1,14 @@
-//Alternate LEDs from Off, Green, and Red
+//This program keeps red perptually on, and turns off green initially before making it dim
+//It is made dim by having the watchdog timer turn on and turn off green 250 times a second.
 #include <msp430.h>
 #include "libTimer.h"
 #include "led.h"
 
-int main(void) {
+int main(void) { 
   P1DIR |= LEDS;
   P1OUT &= ~LED_GREEN;
   P1OUT |= LED_RED;
-
+ 
   configureClocks();		/* setup master oscillator, CPU & peripheral clocks */
   enableWDTInterrupts();	/* enable periodic interrupt */
   
@@ -19,5 +20,6 @@ void
 __interrupt_vec(WDT_VECTOR) WDT()	/* 250 interrupts/sec */
 {
   P1OUT |= LED_GREEN;
+  P1OUT &= ~LED_GREEN;
 } 
 

@@ -1,11 +1,13 @@
 #ifndef led_included
 #define led_included
 
+#endif
+
 #ifndef buzzer_included
 #define buzzer_included
 
 #include <msp430.h>
-#include "libtimer.h"
+#include "timerLib/libTimer.h"
 
 #define LED_RED BIT0
 #define LED_GREEN BIT6
@@ -14,7 +16,7 @@
 #define SW1 BIT3
 #define SWITCHES SW1
 
-void led_int();
+void led_init();
 void led_update();
 
 void buzzer_init();
