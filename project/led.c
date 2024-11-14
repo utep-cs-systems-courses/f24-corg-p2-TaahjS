@@ -1,6 +1,6 @@
 #include <msp430.h>
 #include "led.h"
-#include "libTimer.h"
+#include "timerLib/libTimer.h"
 
 void led_init(){
   P1DIR |= LEDS;
@@ -8,7 +8,7 @@ void led_init(){
 }
 
 void buzzer_init(){
-  timerAUPmode();
+  timerAUpmode();
   P2SEL2 &= ~(BIT6 | BIT7);
   P2SEL &= ~BIT7;
   P2SEL |= BIT6;

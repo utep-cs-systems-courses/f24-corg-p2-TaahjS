@@ -24,7 +24,7 @@ all: lib/libTimer.a led.elf
 
 # Build led.elf only after lib/libTimer.a is created
 
-led.elf: ${COMMON_OBJECTS} lib/libTimer.a
+led.elf: ${COMMON_OBJECTS} main.o led.o lib/libTimer.a
 
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^
 
@@ -49,14 +49,13 @@ load: led.elf
 # Clean all generated files
 
 clean:
-
 	rm -f *.o *.elf *.a
 
 	(cd timerLib && make clean)
 
 	rm -rf h lib
 
-
+led.o: led.c led.h
 
 main.o: led.h
 
