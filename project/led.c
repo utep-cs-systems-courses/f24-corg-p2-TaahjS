@@ -2,7 +2,7 @@
 #include "led.h"
 #include "timerLib/libTimer.h"
 
-void led_init(){
+void led_init(){ //sets up P1OUT and turns off both LEDs
   P1DIR |= LEDS;
   P1OUT &= ~LEDS;
 }
@@ -15,7 +15,7 @@ void buzzer_init(){
   P2DIR = BIT6;
 }
 
-void buzzer_set_period(short cycles){
+void buzzer_set_period(short cycles){ //how frequently the buzzer buzzes
   CCR0 = cycles;
   CCR1 = cycles >> 1;
 }
@@ -27,7 +27,7 @@ void switch_init(){
   P1DIR &= ~SWITCHES;
 }
 
-static int switch_update_interrupt_handler(){
+int switch_update_interrupt_handler(){
   char p1val = P1IN;
   P1IES |= (p1val & SWITCHES);
   P1IES &= (p1val | ~SWITCHES);

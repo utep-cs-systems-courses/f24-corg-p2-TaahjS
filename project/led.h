@@ -9,8 +9,8 @@
 #include <msp430.h>
 #include "timerLib/libTimer.h"
 
-#define LED_RED BIT0
-#define LED_GREEN BIT6
+#define LED_GREEN BIT0
+#define LED_RED BIT6
 #define LEDS (BIT0 | BIT6)
 
 #define SW1 BIT3
@@ -23,7 +23,7 @@ void buzzer_init();
 void buzzer_set_period(short cycles);
 
 void switch_init();
-void switch_interrupt_handler();
+int switch_update_interrupt_handler();
 
 extern unsigned char leds_changed, green_led_state, red_led_state; //boolean flags
 
