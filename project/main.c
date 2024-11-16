@@ -132,7 +132,7 @@ void celebrate(){
 
 void boo(){
   while(seconds != (patternClock + 3){ //dim lights
-      //buzzer_set_period(300);
+      buzzer_set_period(300);
       red_on();
       green_on();
   }
