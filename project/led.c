@@ -32,9 +32,9 @@ int switch_update_interrupt_handler(){
   P1IES |= (p1val & SWITCHES);
   P1IES &= (p1val | ~SWITCHES);
 
-  if(p1val & SW1){ //up
+  if(p1val & SW1){ //not pressed
     return 0;
-  }else{ //down
+  }else{ //pressed
     return 1;
   }
 }

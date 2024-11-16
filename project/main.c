@@ -38,21 +38,30 @@ __interrupt_vec(WDT_VECTOR) WDT(){
   }
   
   if(state == 1){ //pattern display state
-    if(pattern[5] == 5){ //5 lights have shown
+    if(pattern[5] == 5 && seconds > patternClock){ //5 lights have shown & 1 second has passed
+      P1OUT &= ~LEDS;
       patternClock = seconds;
-      pattern[5] = 0;
+      pattern[5] = -1;
       state = 2;
     }else if(seconds > patternClock || pattern[5] == 0){ //1 second passed OR program just started
-      patternClock = seconds;
-      pattern[pattern[5]] = show_pattern(); //displays a light, puts light val into empty slot
-      pattern[5]++;
+      patternClock = seconds; //mark time
+      pattern[pattern[5]] = show_pattern(); //displays 1 light, puts light val into array
+      pattern[5]++; //tells where next light should be put in array
     }
     
   }else if(state == 2){ //input state. from now on, pattern[5] will match the input we're on
     if(pattern[5] == 5){ //done with input
-      state = 3; 
+      state = 3;
       
-    }else if(switch_update_interrupt_handler()){ //switch pressed, show green , turn off red.
+    }else if(pattern[5] == -1){ //if we've just entered this state, give user some time to prepare
+      buzzer_set_period(500);
+      if(seconds > patternClock + 1){
+	buzzer_set_period(0);
+	patternClock = seconds;
+	pattern[5]++;
+      }
+  
+    }else if(switch_update_interrupt_handler()){ //switch pressed, show green, turn off red.
       green_on();
       if(pattern[pattern[5]] == 1){ //green was correct
 	celebrate();
@@ -69,14 +78,16 @@ __interrupt_vec(WDT_VECTOR) WDT(){
 	celebrate();
 	patternClock = seconds;
 	pattern[5]++;
-      }else{ //1 second passed, and red wasn't correct answer so turn off program
+      }else if (seconds > patternClock){ //if red wasn't the right answer after 1s of not press
 	boo();
 	state = 3;
       }
     }
-    
-  }else if(state == 3){
-    P1OUT &= ~LEDS;
+
+  }else if(state == 3){ //game is over
+   buzzer_set_period(0);
+   P1OUT &= ~LEDS;
+   return;
   }
 }
 
@@ -101,11 +112,30 @@ void green_on(){
 }
 
 void celebrate(){
-  //flash bright lights repeatedly
-  //high pitch
+  P1OUT |= LEDS;
+  int i = 0;
+  while(patternClock == seconds){
+    if(i < 5){
+      buzzer_set_period(2000);
+      i++;
+    }else{
+      buzzer_set_period(3000);
+      i++;
+      if(i == 10){
+	i = 0;
+      }
+    }
+  }
+  P1OUT &= ~LEDS;
+  buzzer_set_period(0);
 }
 
 void boo(){
-  //flash dim lights
-  //low pitch
+  while(seconds != (patternClock + 3){ //dim lights
+      //buzzer_set_period(300);
+      red_on();
+      green_on();
+  }
+  buzzer_set_period(0);
+  P1OUT &= ~LEDS;
 }
