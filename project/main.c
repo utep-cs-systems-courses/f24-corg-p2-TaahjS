@@ -2,9 +2,14 @@
 #include "timerLib/libTimer.h"
 #include "led.h"
 
+int show_light(); //show singular light for pattern
 int show_pattern();
+int accept_input();
+void end_program();
+
 void red_on();
 void green_on();
+
 void celebrate();
 void boo();
 
@@ -30,31 +35,32 @@ int state = 1; //1 = showing pattern, 2 = user repeats pattern, 3 = end
 
 //runs 250 times per second
 void
-__interrupt_vec(WDT_VECTOR) WDT(){
-  interrupts++;
-  if(interrupts >= 250){
-    seconds++;
-    interrupts = 0;
-  }
+__interrupt_vec(PORT1_VECTOR) Port_1(){
+   interrupts++;
+   if(interrupts >= 250){
+     seconds++;
+     interrupts = 0;
+   }
+
   
   if(state == 1){ //pattern display state
     if(pattern[5] == 5 && seconds > patternClock){ //5 lights have shown & 1 second has passed
       P1OUT &= ~LEDS;
       patternClock = seconds;
-      pattern[5] = -1;
       state = 2;
     }else if(seconds > patternClock || pattern[5] == 0){ //1 second passed OR program just started
       patternClock = seconds; //mark time
-      pattern[pattern[5]] = show_pattern(); //displays 1 light, puts light val into array
+      pattern[pattern[5]] = show_light();
       pattern[5]++; //tells where next light should be put in array
     }
     
   }else if(state == 2){ //input state. from now on, pattern[5] will match the input we're on
-    if(pattern[5] == 5){ //done with input
+    P1IFG &= ~SWITCHES;
+    if(pattern[5] == 9){ //done with input
       state = 3;
       
-    }else if(pattern[5] == -1){ //if we've just entered this state, give user some time to prepare
-      buzzer_set_period(500);
+    }else if(pattern[5] == -5){ //if we've just entered this state, give user some time to prepare
+      //buzzer_set_period(500);
       if(seconds > patternClock + 1){
 	buzzer_set_period(0);
 	patternClock = seconds;
@@ -63,7 +69,7 @@ __interrupt_vec(WDT_VECTOR) WDT(){
   
     }else if(switch_update_interrupt_handler()){ //switch pressed, show green, turn off red.
       green_on();
-      if(pattern[pattern[5]] == 1){ //green was correct
+      if(pattern[pattern[5] - 5] == 1){ //green was correct
 	celebrate();
 	patternClock = seconds;
 	pattern[5]++; //move on
@@ -74,7 +80,7 @@ __interrupt_vec(WDT_VECTOR) WDT(){
       
    }else{ //switch not pressed, show red, turn off green.
       red_on();
-      if(seconds > patternClock && pattern[pattern[5]] == 0){ //if 1 second passed & pattern red
+      if(seconds > patternClock && pattern[pattern[5] - 5] == 0){ //if 1s passed & pattern is red
 	celebrate();
 	patternClock = seconds;
 	pattern[5]++;
@@ -87,18 +93,23 @@ __interrupt_vec(WDT_VECTOR) WDT(){
   }else if(state == 3){ //game is over
    buzzer_set_period(0);
    P1OUT &= ~LEDS;
+   P1OUT &= ~SWITCHES;
    return;
   }
 }
 
-int show_pattern(){
-  //this is supposed to randomly turn on one led and turn off the other
+int show_light(){
+  //this is supposed to randomly turn on one led and turn off the other, but we don't have space
   if(seconds % 2 == 0){
     green_on();
     return 1;
   }
   red_on();
   return 0;
+}
+
+int show_pattern(){
+
 }
 
 void red_on(){
@@ -116,10 +127,10 @@ void celebrate(){
   int i = 0;
   while(patternClock == seconds){
     if(i < 5){
-      buzzer_set_period(2000);
+      //buzzer_set_period(2000);
       i++;
     }else{
-      buzzer_set_period(3000);
+      //buzzer_set_period(3000);
       i++;
       if(i == 10){
 	i = 0;
@@ -131,8 +142,8 @@ void celebrate(){
 }
 
 void boo(){
-  while(seconds != (patternClock + 3){ //dim lights
-      buzzer_set_period(300);
+  while(seconds != (patternClock + 3)){ //dim lights
+      //buzzer_set_period(300);
       red_on();
       green_on();
   }
