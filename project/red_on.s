@@ -6,7 +6,7 @@
 	.extern P1OUT
 
 red_on:
-	bis #6, &P1OUT
+	bis #64, &P1OUT
 	and #~1, &P1OUT
 	mov #0, r12
 	pop r0		

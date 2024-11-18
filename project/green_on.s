@@ -6,6 +6,6 @@
 	.extern P1OUT
 green_on:
 	bis #1, &P1OUT
-	and #~6, &P1OUT
+	and #~64, &P1OUT
 	mov #1, r12		
 	pop r0			

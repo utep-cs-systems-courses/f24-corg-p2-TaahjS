@@ -7,9 +7,6 @@ int show_pattern();
 int accept_input();
 void end_program();
 
-//int red_on();
-//int green_on();
-
 void celebrate();
 void boo();
 
@@ -45,14 +42,13 @@ __interrupt_vec(WDT_VECTOR) WDT(){
      seconds++;
      interrupts = 0;
    }
-
+   
    if(state == 1){
      state = show_pattern();
    }
    if(state == 3){
      end_program();
    }
-   
 }
 
 int show_light(){
@@ -99,29 +95,13 @@ void end_program(){
   celebrate();
 }
 
-/*
-int red_on(){
-  P1OUT |= LED_RED;
-  P1OUT &= ~LED_GREEN;
-  return 0;
-}
-*/
-
-/*
-int green_on(){
-  P1OUT |= LED_GREEN;
-  P1OUT &= ~LED_RED;
-  return 1;
-}
-*/
-
 void celebrate(){
-  //buzzer_set_period(1000);
+  buzzer_set_period(1000);
   P1OUT |= LEDS;
 }
 
 void boo(){
-  //buzzer_set_period(500)
+  buzzer_set_period(500);
   P1OUT |= LEDS;
   P1OUT &= ~LEDS;
 }
