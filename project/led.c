@@ -27,7 +27,7 @@ void switch_init(){
   P1DIR &= ~SWITCHES;
 }
 
-int switch_update_interrupt_handler(){
+int switch_interrupt_handler(){
   char p1val = P1IN;
   P1IES |= (p1val & SWITCHES);
   P1IES &= (p1val | ~SWITCHES);
