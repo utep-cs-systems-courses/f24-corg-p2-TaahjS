@@ -24,7 +24,7 @@ all: lib/libTimer.a led.elf
 
 # Build led.elf only after lib/libTimer.a is created
 
-led.elf: ${COMMON_OBJECTS} main.o led.o lib/libTimer.a
+led.elf: ${COMMON_OBJECTS} red_on.o green_on.o main.o led.o lib/libTimer.a
 
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^
 
